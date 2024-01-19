@@ -11,7 +11,7 @@ function App() {
   const [questions, setQuestions] = useState([]);
   const [activeQuestion, setActiveQuestion] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState('');
-  const [showResult, setShowResult] = useState(false)
+  const [showResult, setShowResult] = useState(false);
 
   const [result, setResult] = useState({
     score: 0,
@@ -44,6 +44,21 @@ function App() {
     return <div>Loading...</div>;
   }
 
+  const resetQuiz = () => {
+    setQuestions([]);
+    setActiveQuestion(0);
+    setSelectedAnswer('');
+    setShowResult(false);
+    setResult({
+      score: 0,
+      correctAnswers: 0,
+      wrongAnswers: 0,
+    });
+    setSelectedAnswerIndex(null);
+    fetchQuestions();
+  };
+
+
   if (activeQuestion >= questions.length) {
     return (
       <div>
@@ -51,6 +66,9 @@ function App() {
         <p>Score: {result.score}</p>
         <p>Correct Answers: {result.correctAnswers}</p>
         <p>Wrong Answers: {result.wrongAnswers}</p>
+        <div className="flex-right">
+          <button onClick={resetQuiz}>Play Again</button>
+        </div>
       </div>
     );
   }
@@ -75,9 +93,8 @@ function App() {
         wrongAnswers: prev.wrongAnswers + 1,
       }));
     }
-    if (activeQuestion == questions.length - 1) {
-      setActiveQuestion(0)
-      setShowResult(true)
+    if (activeQuestion === questions.length - 1) {
+      setShowResult(true);
     }
     // Reset selectedAnswer for the next question
     setSelectedAnswer('');
@@ -87,11 +104,13 @@ function App() {
     setSelectedAnswer(answer);
     setSelectedAnswerIndex(index);
   };
-  const addLeadingZero = (number) => (number > 9 ? number : `0${number}`)
+
+
+  const addLeadingZero = (number) => (number > 9 ? number : `0${number}`);
 
   return (
     <div className="quiz-container">
-      {!showResult ? (
+      {(
         <div>
           <div>
             <span className="active-question-no">{addLeadingZero(activeQuestion + 1)}</span>
@@ -103,7 +122,8 @@ function App() {
               <li
                 onClick={() => onAnswerSelected(answer, index)}
                 key={answer}
-                className={selectedAnswerIndex === index ? 'selected-answer' : null}>
+                className={selectedAnswerIndex === index ? 'selected-answer' : null}
+              >
                 {answer}
               </li>
             ))}
@@ -114,25 +134,9 @@ function App() {
             </button>
           </div>
         </div>
-      ) : (
-        <div className="result">
-          <h3>Result</h3>
-          <p>
-            Total Question: <span>{questions.length}</span>
-          </p>
-          <p>
-            Total Score:<span> {result.score}</span>
-          </p>
-          <p>
-            Correct Answers:<span> {result.correctAnswers}</span>
-          </p>
-          <p>
-            Wrong Answers:<span> {result.wrongAnswers}</span>
-          </p>
-        </div>
       )}
     </div>
-  )
+  );
 }
 
 export default App;
