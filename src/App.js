@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import he from 'he'; // Import the 'he' library
+import he from 'he';
+import './App.css';
+import TitleScreen from './TitleScreen';
+import EndScreen from './EndScreen';
 
 const API_URL = 'https://opentdb.com/api.php?amount=10';
 
@@ -8,19 +11,23 @@ function App() {
   const [questions, setQuestions] = useState([]);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [score, setScore] = useState(0);
+  const [gameStarted, setGameStarted] = useState(false);
 
   useEffect(() => {
-    fetchQuestions();
-  }, []);
+    if (gameStarted) {
+      fetchQuestions();
+    }
+  }, [gameStarted]);
 
   const fetchQuestions = async () => {
     try {
       const response = await axios.get(API_URL);
       setQuestions(response.data.results.map((result) => ({
         ...result,
-        question: he.decode(result.question), // Decode HTML entities in the question
-        correct_answer: he.decode(result.correct_answer), // Decode HTML entities in the correct answer
-        incorrect_answers: result.incorrect_answers.map(he.decode), // Decode HTML entities in incorrect answers
+        question: he.decode(result.question),
+        correct_answer: he.decode(result.correct_answer),
+        incorrect_answers: result.incorrect_answers.map(he.decode),
+        answers: [...result.incorrect_answers.map(he.decode), he.decode(result.correct_answer)],
       })));
     } catch (error) {
       console.error('Error fetching questions:', error);
@@ -36,33 +43,31 @@ function App() {
     setCurrentQuestion((prevQuestion) => prevQuestion + 1);
   };
 
-  if (currentQuestion >= questions.length) {
-    return (
-      <div>
-        <h1>Trivia Game Completed!</h1>
-        <p>Your final score: {score}</p>
-      </div>
-    );
+  const handleStartGame = () => {
+    setGameStarted(true);
+  };
+
+  if (!gameStarted) {
+    return <TitleScreen onStart={handleStartGame} />;
   }
 
-  const currentQuestionData = questions[currentQuestion];
-  const { category, question, incorrect_answers, correct_answer } = currentQuestionData;
-  const allAnswers = [...incorrect_answers, correct_answer];
-  const shuffledAnswers = allAnswers.sort(() => Math.random() - 0.5);
+  if (currentQuestion >= questions.length) {
+    return <EndScreen score={score} />;
+  }
 
   return (
-    <div>
+    <div className="container">
       <h1>Trivia Game</h1>
-      <p>Category: {category}</p>
-      <p>Question {currentQuestion + 1}/10: {question}</p>
+      <p className="category">Category: {questions[currentQuestion].category}</p>
+      <p className="question">Question {currentQuestion + 1}/10: {questions[currentQuestion].question}</p>
       <ul>
-        {shuffledAnswers.map((answer, index) => (
+        {questions[currentQuestion].answers.map((answer, index) => (
           <li key={index}>
             <button onClick={() => handleAnswer(answer)}>{answer}</button>
           </li>
         ))}
       </ul>
-      <p>Score: {score}</p>
+      <p className="score">Score: {score}</p>
     </div>
   );
 }
