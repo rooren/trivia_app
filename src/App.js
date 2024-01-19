@@ -9,7 +9,6 @@ function App() {
   const [questions, setQuestions] = useState([]);
   const [activeQuestion, setActiveQuestion] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState('');
-  const [showResult, setShowResult] = useState(false);
 
   const [result, setResult] = useState({
     score: 0,
