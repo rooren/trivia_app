@@ -24,6 +24,7 @@ function App() {
         ...result,
         question: he.decode(result.question),
         correct_answer: he.decode(result.correct_answer),
+        category: he.decode(result.category),
         incorrect_answers: result.incorrect_answers.map(he.decode),
         answers: [...result.incorrect_answers.map(he.decode), he.decode(result.correct_answer)],
       }));
@@ -71,6 +72,7 @@ function App() {
 
   const choices = questions[activeQuestion].answers;
   const question = questions[activeQuestion].question;
+  const category = questions[activeQuestion].category;
 
   const onClickNext = () => {
     setActiveQuestion((prev) => prev + 1);
@@ -108,6 +110,9 @@ function App() {
           <div>
             <span className="active-question-no">{addLeadingZero(activeQuestion + 1)}</span>
             <span className="total-question">/{addLeadingZero(questions.length)}</span>
+            <p>Category: {category}</p>
+            <p>Current Score: {result.score}</p>
+
           </div>
           <h2>{question}</h2>
           <ul>
