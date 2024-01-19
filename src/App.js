@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import he from 'he';
 import './App.css';
-import TitleScreen from './TitleScreen';
-import EndScreen from './EndScreen';
 
 const API_URL = 'https://opentdb.com/api.php?amount=10';
 
@@ -75,7 +73,6 @@ function App() {
 
   const choices = questions[activeQuestion].answers;
   const question = questions[activeQuestion].question;
-  const correct_answer = questions[activeQuestion].correct_answer;
 
   const onClickNext = () => {
     setActiveQuestion((prev) => prev + 1);
