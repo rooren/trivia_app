@@ -45,7 +45,6 @@ function App() {
     setQuestions([]);
     setActiveQuestion(0);
     setSelectedAnswer('');
-    setShowResult(false);
     setResult({
       score: 0,
       correctAnswers: 0,
@@ -89,9 +88,7 @@ function App() {
         wrongAnswers: prev.wrongAnswers + 1,
       }));
     }
-    if (activeQuestion === questions.length - 1) {
-      setShowResult(true);
-    }
+
     // Reset selectedAnswer for the next question
     setSelectedAnswer('');
   };
