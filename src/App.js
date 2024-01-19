@@ -8,68 +8,71 @@ import EndScreen from './EndScreen';
 const API_URL = 'https://opentdb.com/api.php?amount=10';
 
 function App() {
+
   const [questions, setQuestions] = useState([]);
-  const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [score, setScore] = useState(0);
-  const [gameStarted, setGameStarted] = useState(false);
-
-  useEffect(() => {
-    if (gameStarted) {
-      fetchQuestions();
+  const [activeQuestion, setActiveQuestion] = useState(0);
+  const [selectedAnswer, setSelectedAnswer] = useState('')
+  const [result, setResult] = useState({
+    score: 0,
+    correctAnswers: 0,
+    wrongAnswers: 0,
+  })
+  const onClickNext = () => {
+    setActiveQuestion((prev) => prev + 1)
+    setResult((prev) =>
+      selectedAnswer
+        ? {
+            ...prev,
+            score: prev.score + 5,
+            correctAnswers: prev.correctAnswers + 1,
+          }
+        : { ...prev, wrongAnswers: prev.wrongAnswers + 1 }
+    )
     }
-  }, [gameStarted]);
 
+  // Now you can safely access questions[activeQuestion].question here or in other parts of your component
   const fetchQuestions = async () => {
     try {
       const response = await axios.get(API_URL);
-      setQuestions(response.data.results.map((result) => ({
+      const decodedQuestions = response.data.results.map((result) => ({
         ...result,
         question: he.decode(result.question),
         correct_answer: he.decode(result.correct_answer),
         incorrect_answers: result.incorrect_answers.map(he.decode),
         answers: [...result.incorrect_answers.map(he.decode), he.decode(result.correct_answer)],
-      })));
+      }));
+      setQuestions(decodedQuestions);
     } catch (error) {
       console.error('Error fetching questions:', error);
     }
   };
 
-  const handleAnswer = (answer) => {
-    const isCorrect = answer === questions[currentQuestion].correct_answer;
-    if (isCorrect) {
-      setScore((prevScore) => prevScore + 1);
-    }
+  useEffect(() => {
+    fetchQuestions();
+  }, []); // empty dependency array ensures the effect runs only once, similar to componentDidMount
 
-    setCurrentQuestion((prevQuestion) => prevQuestion + 1);
-  };
-
-  const handleStartGame = () => {
-    setGameStarted(true);
-  };
-
-  if (!gameStarted) {
-    return <TitleScreen onStart={handleStartGame} />;
+  // Ensure questions is not empty and activeQuestion is within a valid index range
+  if (questions.length === 0 || activeQuestion < 0 ) {
+    return <div>Loading...</div>;
   }
-
-  if (currentQuestion >= questions.length) {
-    return <EndScreen score={score} />;
+ if(activeQuestion >= questions.length)
+  {
+    return <div>Finished Quiz</div>; 
   }
 
   return (
-    <div className="container">
-      <h1>Trivia Game</h1>
-      <p className="category">Category: {questions[currentQuestion].category}</p>
-      <p className="question">Question {currentQuestion + 1}/10: {questions[currentQuestion].question}</p>
+    <div>
+      <h1>Quiz</h1>
+      <h2>{questions[activeQuestion].question}</h2>
       <ul>
-        {questions[currentQuestion].answers.map((answer, index) => (
-          <li key={index}>
-            <button onClick={() => handleAnswer(answer)}>{answer}</button>
-          </li>
+        {questions[activeQuestion].answers.map((item) => (
+          <li>{item}</li>
         ))}
+        <button onClick={onClickNext}>Next</button>
       </ul>
-      <p className="score">Score: {score}</p>
     </div>
-  );
+  )
+  
 }
 
 export default App;
