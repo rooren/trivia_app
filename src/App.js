@@ -77,7 +77,7 @@ function App() {
   const onClickNext = () => {
     setActiveQuestion((prev) => prev + 1);
 
-    if (selectedAnswer !== '') {
+    if (selectedAnswer === questions[activeQuestion].correct_answer) {
       setResult((prev) => ({
         score: prev.score + 5,
         correctAnswers: prev.correctAnswers + 1,
@@ -90,9 +90,10 @@ function App() {
         wrongAnswers: prev.wrongAnswers + 1,
       }));
     }
-
-    // Reset selectedAnswer for the next question
+  
+    // Reset selectedAnswer & setSelectedAnswerIndex for the next question
     setSelectedAnswer('');
+    setSelectedAnswerIndex(null);
   };
 
   const onAnswerSelected = (answer, index) => {
