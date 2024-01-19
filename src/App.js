@@ -17,18 +17,7 @@ function App() {
     correctAnswers: 0,
     wrongAnswers: 0,
   })
-  const onClickNext = () => {
-    setActiveQuestion((prev) => prev + 1)
-    setResult((prev) =>
-      selectedAnswer
-        ? {
-            ...prev,
-            score: prev.score + 5,
-            correctAnswers: prev.correctAnswers + 1,
-          }
-        : { ...prev, wrongAnswers: prev.wrongAnswers + 1 }
-    )
-    }
+  const [selectedAnswerIndex, setSelectedAnswerIndex] = useState(null)
 
   // Now you can safely access questions[activeQuestion].question here or in other parts of your component
   const fetchQuestions = async () => {
@@ -60,19 +49,53 @@ function App() {
     return <div>Finished Quiz</div>; 
   }
 
+  const choices = questions[activeQuestion].answers
+  const question = questions[activeQuestion].question
+  const correct_answer = questions[activeQuestion].correct_answer
+
+
+  const onClickNext = () => {
+    setActiveQuestion((prev) => prev + 1)
+    setResult((prev) =>
+      selectedAnswer
+        ? {
+            ...prev,
+            score: prev.score + 5,
+            correctAnswers: prev.correctAnswers + 1,
+          }
+        : { ...prev, wrongAnswers: prev.wrongAnswers + 1 }
+    )
+  }
+
+  const onAnswerSelected = (answer, index) => {
+    setSelectedAnswerIndex(index)
+    if (answer === correct_answer) {
+      setSelectedAnswer(true)
+    } else {
+      setSelectedAnswer(false)
+    }
+  }
+
   return (
-    <div>
+    <div className="quiz-container">
       <h1>Quiz</h1>
-      <h2>{questions[activeQuestion].question}</h2>
+      <h2>{question}</h2>
       <ul>
-        {questions[activeQuestion].answers.map((item) => (
-          <li>{item}</li>
-        ))}
-        <button onClick={onClickNext}>Next</button>
-      </ul>
-    </div>
+            {choices.map((answer, index) => (
+              <li
+                onClick={() => onAnswerSelected(answer, index)}
+                key={answer}
+                className={selectedAnswerIndex === index ? 'selected-answer' : null}>
+                {answer}
+              </li>
+            ))}
+          </ul>
+<button onClick={onClickNext} disabled={selectedAnswerIndex === null}>
+  {activeQuestion === questions.length - 1 ? 'Finish' : 'Next'}
+</button>
+  </div>
   )
-  
 }
+
 
 export default App;

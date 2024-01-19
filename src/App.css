@@ -33,7 +33,10 @@ ul {
 li {
   margin: 10px 0;
 }
-
+.quiz-container ul .selected-answer {
+  background: #ffd6ff;
+  border: 1px solid #800080;
+}
 button {
   background-color: #3498db;
   color: #fff;
