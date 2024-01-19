@@ -11,6 +11,8 @@ function App() {
   const [questions, setQuestions] = useState([]);
   const [activeQuestion, setActiveQuestion] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState('');
+  const [showResult, setShowResult] = useState(false)
+
   const [result, setResult] = useState({
     score: 0,
     correctAnswers: 0,
@@ -73,7 +75,10 @@ function App() {
         wrongAnswers: prev.wrongAnswers + 1,
       }));
     }
-
+    if (activeQuestion == questions.length - 1) {
+      setActiveQuestion(0)
+      setShowResult(true)
+    }
     // Reset selectedAnswer for the next question
     setSelectedAnswer('');
   };
@@ -82,32 +87,52 @@ function App() {
     setSelectedAnswer(answer);
     setSelectedAnswerIndex(index);
   };
+  const addLeadingZero = (number) => (number > 9 ? number : `0${number}`)
 
   return (
     <div className="quiz-container">
-      <h1>Quiz</h1>
+      {!showResult ? (
         <div>
-      <p>Score: {result.score}</p>
-      <p>Correct Answers: {result.correctAnswers}</p>
-      <p>Wrong Answers: {result.wrongAnswers}</p>
-      </div>
-      <h2>{question}</h2>
-      <ul>
-        {choices.map((answer, index) => (
-          <li
-            onClick={() => onAnswerSelected(answer, index)}
-            key={answer}
-            className={selectedAnswerIndex === index ? 'selected-answer' : null}
-          >
-            {answer}
-          </li>
-        ))}
-      </ul>
-      <button onClick={onClickNext} disabled={selectedAnswerIndex === null}>
-        {activeQuestion === questions.length - 1 ? 'Finish' : 'Next'}
-      </button>
+          <div>
+            <span className="active-question-no">{addLeadingZero(activeQuestion + 1)}</span>
+            <span className="total-question">/{addLeadingZero(questions.length)}</span>
+          </div>
+          <h2>{question}</h2>
+          <ul>
+            {choices.map((answer, index) => (
+              <li
+                onClick={() => onAnswerSelected(answer, index)}
+                key={answer}
+                className={selectedAnswerIndex === index ? 'selected-answer' : null}>
+                {answer}
+              </li>
+            ))}
+          </ul>
+          <div className="flex-right">
+            <button onClick={onClickNext} disabled={selectedAnswerIndex === null}>
+              {activeQuestion === questions.length - 1 ? 'Finish' : 'Next'}
+            </button>
+          </div>
+        </div>
+      ) : (
+        <div className="result">
+          <h3>Result</h3>
+          <p>
+            Total Question: <span>{questions.length}</span>
+          </p>
+          <p>
+            Total Score:<span> {result.score}</span>
+          </p>
+          <p>
+            Correct Answers:<span> {result.correctAnswers}</span>
+          </p>
+          <p>
+            Wrong Answers:<span> {result.wrongAnswers}</span>
+          </p>
+        </div>
+      )}
     </div>
-  );
+  )
 }
 
 export default App;
