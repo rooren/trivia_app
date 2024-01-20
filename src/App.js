@@ -17,6 +17,17 @@ function App() {
   const [selectedAnswerIndex, setSelectedAnswerIndex] = useState(null);
   const [answerStatus, setAnswerStatus] = useState(null);
 
+
+
+// Helper function to shuffle an array
+const shuffleArray = (array) => {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+};
+
   const fetchQuestions = async () => {
     try {
       const response = await axios.get(API_URL);
@@ -26,7 +37,7 @@ function App() {
         correct_answer: he.decode(result.correct_answer),
         category: he.decode(result.category),
         incorrect_answers: result.incorrect_answers.map(he.decode),
-        answers: [...result.incorrect_answers.map(he.decode), he.decode(result.correct_answer)],
+        answers: shuffleArray([...result.incorrect_answers.map(he.decode), he.decode(result.correct_answer)]),
       }));
       setQuestions(decodedQuestions);
     } catch (error) {
