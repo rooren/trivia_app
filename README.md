@@ -35,7 +35,7 @@ The app features the following screens:
 
 ![start_screnn](https://github.com/rooren/trivia_app/assets/58310236/1a6de35a-82dc-4ddf-8a50-b74272558376)
 
-- Loading screen - Waites for the questions to load.
+- Loading screen - Waits for the questions to load.
 
 ![Loading_screen](https://github.com/rooren/trivia_app/assets/58310236/6bcaec7a-d48e-49f6-82bb-d8beb4f6f6a9)
 
