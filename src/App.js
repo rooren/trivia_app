@@ -16,36 +16,52 @@ function App() {
   });
   const [selectedAnswerIndex, setSelectedAnswerIndex] = useState(null);
   const [answerStatus, setAnswerStatus] = useState(null);
-
-  const fetchQuestions = async () => {
-    try {      
-      const shuffleArray = (array) => {
-        for (let i = array.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1));
-          [array[i], array[j]] = [array[j], array[i]];
-        }
-        return array;
-      };
-      const response = await axios.get(API_URL);
-      const decodedQuestions = response.data.results.map((result) => ({
-        ...result,
-        question: he.decode(result.question),
-        correct_answer: he.decode(result.correct_answer),
-        category: he.decode(result.category),
-        incorrect_answers: result.incorrect_answers.map(he.decode),
-        answers: shuffleArray([...result.incorrect_answers.map(he.decode), he.decode(result.correct_answer)]),
-      }));
-      setQuestions(decodedQuestions);
-    } catch (error) {
-      console.error('Error fetching questions:', error);
+  const fetchQuestions = async (retryCount = 15) => {
+    let success = false;
+  
+    for (let attempt = 0; attempt <= retryCount; attempt++) {
+      try {
+        const shuffleArray = (array) => {
+          for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+          }
+          return array;
+        };
+  
+        const response = await axios.get(API_URL);
+        const decodedQuestions = response.data.results.map((result) => ({
+          ...result,
+          question: he.decode(result.question),
+          correct_answer: he.decode(result.correct_answer),
+          category: he.decode(result.category),
+          incorrect_answers: result.incorrect_answers.map(he.decode),
+          answers: shuffleArray([...result.incorrect_answers.map(he.decode), he.decode(result.correct_answer)]),
+        }));
+  
+        setQuestions(decodedQuestions);
+  
+        success = true;
+        break; // Break out of the loop if fetching is successful
+      } catch (error) {
+        console.error(`Error fetching questions (attempt ${attempt + 1}/${retryCount + 1}):`, error);
+      }
+  
+      // Retry after a delay (500 milliseconds in this example)
+      await new Promise((resolve) => setTimeout(resolve, 500));
+    }
+  
+    if (!success) {
+      // You can handle the case when all retries are exhausted, e.g., show an error message
+      console.error('Exhausted retry attempts. Unable to fetch questions.');
     }
   };
-
+  
   useEffect(() => {
     fetchQuestions();
   }, []);
 
-  if (questions.length === 0 || activeQuestion < 0) {
+  if (questions.length === 0) {
     return <div>Loading...</div>;
   }
 
@@ -67,7 +83,7 @@ function App() {
     setAnswerStatus(null);
   };
 
-  if (activeQuestion >= questions.length) {
+  if (activeQuestion >= questions.length || activeQuestion >= questions.length) {
     return (
       <div>
         <h1>Quiz Finished</h1>
