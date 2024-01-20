@@ -9,13 +9,13 @@ function App() {
   const [questions, setQuestions] = useState([]);
   const [activeQuestion, setActiveQuestion] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState('');
-
   const [result, setResult] = useState({
     score: 0,
     correctAnswers: 0,
     wrongAnswers: 0,
   });
   const [selectedAnswerIndex, setSelectedAnswerIndex] = useState(null);
+  const [answerStatus, setAnswerStatus] = useState(null);
 
   const fetchQuestions = async () => {
     try {
@@ -52,9 +52,13 @@ function App() {
       wrongAnswers: 0,
     });
     setSelectedAnswerIndex(null);
+    setAnswerStatus(null);
     fetchQuestions();
   };
 
+  const nextQuestion = () => {
+    setAnswerStatus(null);
+  };
 
   if (activeQuestion >= questions.length) {
     return (
@@ -75,9 +79,13 @@ function App() {
   const category = questions[activeQuestion].category;
 
   const onClickNext = () => {
+    const isCorrect = selectedAnswer === questions[activeQuestion].correct_answer;
+
+    setAnswerStatus(isCorrect ? 'correct' : 'wrong');
+
     setActiveQuestion((prev) => prev + 1);
 
-    if (selectedAnswer === questions[activeQuestion].correct_answer) {
+    if (isCorrect) {
       setResult((prev) => ({
         score: prev.score + 5,
         correctAnswers: prev.correctAnswers + 1,
@@ -90,7 +98,7 @@ function App() {
         wrongAnswers: prev.wrongAnswers + 1,
       }));
     }
-  
+
     // Reset selectedAnswer & setSelectedAnswerIndex for the next question
     setSelectedAnswer('');
     setSelectedAnswerIndex(null);
@@ -101,8 +109,23 @@ function App() {
     setSelectedAnswerIndex(index);
   };
 
-
   const addLeadingZero = (number) => (number > 9 ? number : `0${number}`);
+
+  if(answerStatus !== null )
+  {
+    return (
+      <div>
+      <span className="active-question-no">{addLeadingZero(activeQuestion + 1)}</span>
+      <span className="total-question">/{addLeadingZero(questions.length)}</span>
+        <h1>Your answer is {answerStatus === 'correct' ? 'correct' : 'wrong'}</h1>
+        <p>Score: {result.score}</p>
+        <div className="flex-right">
+          <button onClick={nextQuestion}>Next question</button>
+        </div>
+      </div>
+    );  
+  }
+
 
   return (
     <div className="quiz-container">
@@ -113,7 +136,6 @@ function App() {
             <span className="total-question">/{addLeadingZero(questions.length)}</span>
             <p>Category: {category}</p>
             <p>Current Score: {result.score}</p>
-
           </div>
           <h2>{question}</h2>
           <ul>
