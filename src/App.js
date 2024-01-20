@@ -6,6 +6,7 @@ import './App.css';
 const API_URL = 'https://opentdb.com/api.php?amount=10';
 
 function App() {
+    // State variables to manage questions, active question, selected answer, title screen, result, etc.
   const [questions, setQuestions] = useState([]);
   const [activeQuestion, setActiveQuestion] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState('');
@@ -17,10 +18,13 @@ function App() {
   });
   const [selectedAnswerIndex, setSelectedAnswerIndex] = useState(null);
   const [answerStatus, setAnswerStatus] = useState(null);
+  
+    // Function to fetch trivia questions from the API
   const fetchQuestions = async (retryCount = 20) => {
     let success = false;
     for (let attempt = 0; attempt <= retryCount; attempt++) {
       try {
+        // Shuffles the answers so they will be in random order
         const shuffleArray = (array) => {
           for (let i = array.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
@@ -29,6 +33,7 @@ function App() {
           return array;
         };
   
+        // Fetch questions from the API and decode HTML entities
         const response = await axios.get(API_URL);
         const decodedQuestions = response.data.results.map((result) => ({
           ...result,
@@ -47,7 +52,7 @@ function App() {
         console.error(`Error fetching questions (attempt ${attempt + 1}/${retryCount + 1}):`, error);
       }
       // Retry after a delay
-      await new Promise((resolve) => setTimeout(resolve, 700));
+      await new Promise((resolve) => setTimeout(resolve, 500));
     }
   
     if (!success) {
@@ -63,10 +68,13 @@ function App() {
     setTitleScreen(false); // Set titleScreen to false to hide the title screen
   };
 
+
+  // Display Loading message if questions are not fetched yet
   if (questions.length === 0) {
     return <div>Loading...</div>;
   }
 
+  // Display title screen at the start of the game
   if (titleScreen) {
     return (
       <div className="title-screen">
@@ -76,6 +84,8 @@ function App() {
       </div>
     );
   }
+
+  // Reset the quiz state and fetch new questions
   const resetQuiz = () => {
     setQuestions([]);
     setActiveQuestion(0);
@@ -90,11 +100,14 @@ function App() {
     fetchQuestions();
   };
 
+  // Move to the next question
+  // To be called while displaying previous questions result
   const nextQuestion = () => {
     setActiveQuestion((prev) => prev + 1);
     setAnswerStatus(null);
   };
 
+  // Display final results if all questions are answered.
   if (activeQuestion >= questions.length) {
     return (
       <div className="quiz-container">
@@ -109,17 +122,21 @@ function App() {
     );
   }
 
+  // Get all question properties for the current displayed question
   const choices = questions[activeQuestion].answers;
   const question = questions[activeQuestion].question;
   const category = questions[activeQuestion].category;
 
-  const onClickNext = () => {
+
+  // Handle the click on the "Select answer" button
+  // Updates the score and answer count
+  // Update the answer status so it will display the answer status screen
+  const onClickSelectAnswer = () => {
     const isCorrect = selectedAnswer === questions[activeQuestion].correct_answer;
     console.log("The correct answer is", questions[activeQuestion].correct_answer)
     console.log("Picked answer is", selectedAnswer)
 
     setAnswerStatus(isCorrect ? 'correct' : 'wrong');
-
 
     if (isCorrect) {
       setResult((prev) => ({
@@ -140,6 +157,7 @@ function App() {
     setSelectedAnswerIndex(null);
   };
 
+  // Update the selected answer
   const onAnswerSelected = (answer, index) => {
     console.log('Selected Answer:', answer);
     console.log('Selected Answer Index:', index);
@@ -148,8 +166,10 @@ function App() {
     setSelectedAnswerIndex(index);
   };
 
+  // Add a leading zero to a number (for question numbering)
   const addLeadingZero = (number) => (number > 9 ? number : `0${number}`);
 
+  // Display UI for correct or wrong answer feedback
   if(answerStatus !== null )
   {
     return (
@@ -171,7 +191,8 @@ function App() {
       </div>
     );
   }
-  
+
+  // Render the quiz container with the active question and choices
   return (
     <div className="quiz-container">
       <div>
@@ -195,13 +216,12 @@ function App() {
         <div className="flex-right">
           {/* Conditionally render the button only if an answer had been selected */}
           {selectedAnswer && (
-            <button onClick={onClickNext}>Select answer</button>
+            <button onClick={onClickSelectAnswer}>Select answer</button>
           )}
         </div>
       </div>
     </div>
   );
-  
 }
 
 export default App;
