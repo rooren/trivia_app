@@ -80,10 +80,11 @@ function App() {
   };
 
   const nextQuestion = () => {
+    setActiveQuestion((prev) => prev + 1);
     setAnswerStatus(null);
   };
 
-  if (activeQuestion >= questions.length || activeQuestion >= questions.length) {
+  if (activeQuestion >= questions.length) {
     return (
       <div>
         <h1>Quiz Finished</h1>
@@ -108,7 +109,6 @@ function App() {
 
     setAnswerStatus(isCorrect ? 'correct' : 'wrong');
 
-    setActiveQuestion((prev) => prev + 1);
 
     if (isCorrect) {
       setResult((prev) => ({
@@ -143,15 +143,23 @@ function App() {
   {
     return (
       <div>
-        <span className="active-question-no">{addLeadingZero(activeQuestion)}</span>
+        <span className="active-question-no">{addLeadingZero(activeQuestion + 1)}</span>
         <span className="total-question">/{addLeadingZero(questions.length)}</span>
-        <h1>{answerStatus === 'correct' ? 'correct' : 'wrong'}</h1>
+        <h1>{answerStatus === 'correct' ? 'Correct' : 'Wrong'}</h1>
+        {answerStatus === 'wrong' && (
+          <div className="correct-answer">
+            <p>The correct answer is: {questions[activeQuestion].correct_answer}</p>
+          </div>
+        )}
         <p>Current score: {result.score}</p>
         <div className="flex-right">
-          <button onClick={nextQuestion}>Next question</button>
+          <button onClick={nextQuestion}>
+            {activeQuestion === questions.length - 1 ? 'Finish' : 'Next question'}
+          </button>
         </div>
       </div>
     );
+    
   }
   
   return (
@@ -177,9 +185,7 @@ function App() {
         <div className="flex-right">
           {/* Conditionally render the button only if an answer had been selected */}
           {selectedAnswer && (
-            <button onClick={onClickNext}>
-              {activeQuestion === questions.length - 1 ? 'Finish' : 'Select answer'}
-            </button>
+            <button onClick={onClickNext}>Select answer</button>
           )}
         </div>
       </div>
