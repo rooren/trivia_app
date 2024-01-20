@@ -16,7 +16,7 @@ function App() {
   });
   const [selectedAnswerIndex, setSelectedAnswerIndex] = useState(null);
   const [answerStatus, setAnswerStatus] = useState(null);
-  const fetchQuestions = async (retryCount = 15) => {
+  const fetchQuestions = async (retryCount = 20) => {
     let success = false;
   
     for (let attempt = 0; attempt <= retryCount; attempt++) {
@@ -47,8 +47,8 @@ function App() {
         console.error(`Error fetching questions (attempt ${attempt + 1}/${retryCount + 1}):`, error);
       }
   
-      // Retry after a delay (500 milliseconds in this example)
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      // Retry after a delay
+      await new Promise((resolve) => setTimeout(resolve, 700));
     }
   
     if (!success) {
@@ -140,8 +140,8 @@ function App() {
       <div>
         <span className="active-question-no">{addLeadingZero(activeQuestion + 1)}</span>
         <span className="total-question">/{addLeadingZero(questions.length)}</span>
-        <h1>Your answer is {answerStatus === 'correct' ? 'correct' : 'wrong'}</h1>
-        <p>Score: {result.score}</p>
+        <h1>{answerStatus === 'correct' ? 'correct' : 'wrong'}</h1>
+        <p>Current score: {result.score}</p>
         <div className="flex-right">
           <button onClick={nextQuestion}>Next question</button>
         </div>
@@ -156,10 +156,9 @@ function App() {
           <div>
             <span className="active-question-no">{addLeadingZero(activeQuestion + 1)}</span>
             <span className="total-question">/{addLeadingZero(questions.length)}</span>
-            <p>Category: {category}</p>
-            <p>Current Score: {result.score}</p>
           </div>
           <h2>{question}</h2>
+            <p>Category: {category}</p>
           <ul>
             {choices.map((answer, index) => (
               <li
