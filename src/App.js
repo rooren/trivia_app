@@ -9,6 +9,7 @@ function App() {
   const [questions, setQuestions] = useState([]);
   const [activeQuestion, setActiveQuestion] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState('');
+  const [titleScreen, setTitleScreen] = useState(true);
   const [result, setResult] = useState({
     score: 0,
     correctAnswers: 0,
@@ -18,7 +19,6 @@ function App() {
   const [answerStatus, setAnswerStatus] = useState(null);
   const fetchQuestions = async (retryCount = 20) => {
     let success = false;
-  
     for (let attempt = 0; attempt <= retryCount; attempt++) {
       try {
         const shuffleArray = (array) => {
@@ -46,13 +46,11 @@ function App() {
       } catch (error) {
         console.error(`Error fetching questions (attempt ${attempt + 1}/${retryCount + 1}):`, error);
       }
-  
       // Retry after a delay
       await new Promise((resolve) => setTimeout(resolve, 700));
     }
   
     if (!success) {
-      // You can handle the case when all retries are exhausted, e.g., show an error message
       console.error('Exhausted retry attempts. Unable to fetch questions.');
     }
   };
@@ -61,10 +59,23 @@ function App() {
     fetchQuestions();
   }, []);
 
+  const handleStartButtonClick = () => {
+    setTitleScreen(false); // Set titleScreen to false to hide the title screen
+  };
+
   if (questions.length === 0) {
     return <div>Loading...</div>;
   }
 
+  if (titleScreen) {
+    return (
+      <div className="title-screen">
+        <h1>Welcome to the trivia Game!</h1>
+        <p>Press the start button to begin.</p>
+        <button onClick={handleStartButtonClick}>Start</button>
+      </div>
+    );
+  }
   const resetQuiz = () => {
     setQuestions([]);
     setActiveQuestion(0);
@@ -159,7 +170,6 @@ function App() {
         </div>
       </div>
     );
-    
   }
   
   return (
