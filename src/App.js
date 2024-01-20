@@ -103,6 +103,8 @@ function App() {
 
   const onClickNext = () => {
     const isCorrect = selectedAnswer === questions[activeQuestion].correct_answer;
+    console.log("The correct answer is", questions[activeQuestion].correct_answer)
+    console.log("Picked answer is", selectedAnswer)
 
     setAnswerStatus(isCorrect ? 'correct' : 'wrong');
 
@@ -128,6 +130,9 @@ function App() {
   };
 
   const onAnswerSelected = (answer, index) => {
+    console.log('Selected Answer:', answer);
+    console.log('Selected Answer Index:', index);
+
     setSelectedAnswer(answer);
     setSelectedAnswerIndex(index);
   };
@@ -138,7 +143,7 @@ function App() {
   {
     return (
       <div>
-        <span className="active-question-no">{addLeadingZero(activeQuestion + 1)}</span>
+        <span className="active-question-no">{addLeadingZero(activeQuestion)}</span>
         <span className="total-question">/{addLeadingZero(questions.length)}</span>
         <h1>{answerStatus === 'correct' ? 'correct' : 'wrong'}</h1>
         <p>Current score: {result.score}</p>
@@ -148,37 +153,39 @@ function App() {
       </div>
     );
   }
-
+  
   return (
     <div className="quiz-container">
-      {(
+      <div>
         <div>
-          <div>
-            <span className="active-question-no">{addLeadingZero(activeQuestion + 1)}</span>
-            <span className="total-question">/{addLeadingZero(questions.length)}</span>
-          </div>
-          <h2>{question}</h2>
-            <p>Category: {category}</p>
-          <ul>
-            {choices.map((answer, index) => (
-              <li
-                onClick={() => onAnswerSelected(answer, index)}
-                key={answer}
-                className={selectedAnswerIndex === index ? 'selected-answer' : null}
-              >
-                {answer}
-              </li>
-            ))}
-          </ul>
-          <div className="flex-right">
-            <button onClick={onClickNext} disabled={selectedAnswerIndex === null}>
-              {activeQuestion === questions.length - 1 ? 'Finish' : 'Next'}
-            </button>
-          </div>
+          <span className="active-question-no">{addLeadingZero(activeQuestion + 1)}</span>
+          <span className="total-question">/{addLeadingZero(questions.length)}</span>
         </div>
-      )}
+        <h2>{question}</h2>
+        <p>Category: {category}</p>
+        <ul>
+          {choices.map((answer, index) => (
+            <li
+              onClick={() => onAnswerSelected(answer, index)}
+              key={answer}
+              className={selectedAnswerIndex === index ? 'selected-answer' : null}
+            >
+              {answer}
+            </li>
+          ))}
+        </ul>
+        <div className="flex-right">
+          {/* Conditionally render the button only if an answer had been selected */}
+          {selectedAnswer && (
+            <button onClick={onClickNext}>
+              {activeQuestion === questions.length - 1 ? 'Finish' : 'Select answer'}
+            </button>
+          )}
+        </div>
+      </div>
     </div>
   );
+  
 }
 
 export default App;
