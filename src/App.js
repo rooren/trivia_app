@@ -6,7 +6,7 @@ import './App.css';
 const API_URL = 'https://opentdb.com/api.php?amount=10';
 
 function App() {
-    // State variables to manage questions, active question, selected answer, title screen, result, etc.
+  // State variables to manage questions, active question, selected answer, title screen, result, etc.
   const [questions, setQuestions] = useState([]);
   const [activeQuestion, setActiveQuestion] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState('');
@@ -19,7 +19,7 @@ function App() {
   const [selectedAnswerIndex, setSelectedAnswerIndex] = useState(null);
   const [answerStatus, setAnswerStatus] = useState(null);
   
-    // Function to fetch trivia questions from the API
+  // Function to fetch trivia questions from the API
   const fetchQuestions = async (retryCount = 20) => {
     let success = false;
     for (let attempt = 0; attempt <= retryCount; attempt++) {
@@ -68,10 +68,9 @@ function App() {
     setTitleScreen(false); // Set titleScreen to false to hide the title screen
   };
 
-
   // Display Loading message if questions are not fetched yet
   if (questions.length === 0) {
-    return <div>Loading...</div>;
+    return <div className="quiz-container">Loading...</div>;
   }
 
   // Display title screen at the start of the game
@@ -97,6 +96,7 @@ function App() {
     });
     setSelectedAnswerIndex(null);
     setAnswerStatus(null);
+    setTitleScreen(true);
     fetchQuestions();
   };
 
@@ -126,7 +126,6 @@ function App() {
   const choices = questions[activeQuestion].answers;
   const question = questions[activeQuestion].question;
   const category = questions[activeQuestion].category;
-
 
   // Handle the click on the "Select answer" button
   // Updates the score and answer count
