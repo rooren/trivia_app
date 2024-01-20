@@ -97,7 +97,7 @@ function App() {
 
   if (activeQuestion >= questions.length) {
     return (
-      <div>
+      <div className="quiz-container">
         <h1>Trivia Finished</h1>
         <p>Score: {result.score}</p>
         <p>Correct Answers: {result.correctAnswers}</p>
@@ -153,7 +153,7 @@ function App() {
   if(answerStatus !== null )
   {
     return (
-      <div>
+      <div className="quiz-container">
         <span className="active-question-no">{addLeadingZero(activeQuestion + 1)}</span>
         <span className="total-question">/{addLeadingZero(questions.length)}</span>
         <h1>{answerStatus === 'correct' ? 'Correct' : 'Wrong'}</h1>
