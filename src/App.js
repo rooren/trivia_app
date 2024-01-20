@@ -87,7 +87,7 @@ function App() {
   if (activeQuestion >= questions.length) {
     return (
       <div>
-        <h1>Quiz Finished</h1>
+        <h1>Trivia Finished</h1>
         <p>Score: {result.score}</p>
         <p>Correct Answers: {result.correctAnswers}</p>
         <p>Wrong Answers: {result.wrongAnswers}</p>
