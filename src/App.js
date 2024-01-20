@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import he from 'he';
 import './App.css';
 
 const API_URL = 'https://opentdb.com/api.php?amount=10';
 
-const App = () => {
+function App() {
   const [questions, setQuestions] = useState([]);
   const [activeQuestion, setActiveQuestion] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState('');
@@ -16,18 +16,6 @@ const App = () => {
   });
   const [selectedAnswerIndex, setSelectedAnswerIndex] = useState(null);
   const [answerStatus, setAnswerStatus] = useState(null);
-
-  // Shuffle the choices array for each question and store it in a ref
-  const shuffledChoicesRef = useRef([]);
-
-  const shuffleArray = (array) => {
-    const shuffledArray = [...array];
-    for (let i = shuffledArray.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]];
-    }
-    return shuffledArray;
-  };
 
   const fetchQuestions = async () => {
     try {
@@ -40,10 +28,6 @@ const App = () => {
         incorrect_answers: result.incorrect_answers.map(he.decode),
         answers: [...result.incorrect_answers.map(he.decode), he.decode(result.correct_answer)],
       }));
-
-      // Shuffle the choices array for each question
-      shuffledChoicesRef.current = decodedQuestions.map((question) => shuffleArray(question.answers));
-
       setQuestions(decodedQuestions);
     } catch (error) {
       console.error('Error fetching questions:', error);
@@ -90,7 +74,7 @@ const App = () => {
     );
   }
 
-  const choices = shuffledChoicesRef.current[activeQuestion];
+  const choices = questions[activeQuestion].answers;
   const question = questions[activeQuestion].question;
   const category = questions[activeQuestion].category;
 
@@ -127,7 +111,8 @@ const App = () => {
 
   const addLeadingZero = (number) => (number > 9 ? number : `0${number}`);
 
-  if (answerStatus !== null) {
+  if(answerStatus !== null )
+  {
     return (
       <div>
         <span className="active-question-no">{addLeadingZero(activeQuestion + 1)}</span>
@@ -172,6 +157,6 @@ const App = () => {
       )}
     </div>
   );
-};
+}
 
 export default App;
