@@ -1,7 +1,7 @@
 # React Trivia Game
 
 Welcome to the React Trivia Game! This simple React application fetches trivia questions from the Open Trivia Database and allows users to play a trivia game.
-the game is avilable here: https://thankful-bush-0c653ca03.4.azurestaticapps.net/
+
 
 ## Features
 
